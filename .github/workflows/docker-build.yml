@@ -1,0 +1,25 @@
+name: Docker Build Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image (no push)
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: false
+          load: true
+          tags: certbot-dns-arsys:ci
+
+      - name: Verify dns-arsys plugin is registered
+        run: docker run --rm certbot-dns-arsys:ci plugins | grep -q dns-arsys

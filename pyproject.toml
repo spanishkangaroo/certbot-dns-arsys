@@ -1,0 +1,78 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "certbot-dns-arsys"
+version = "0.1.2"
+description = "Arsys DNS Authenticator plugin for Certbot"
+readme = "README.rst"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+authors = [
+    { name = "Javier Vázquez", email = "javier.vazquez.romera@gmail.com" },
+]
+keywords = ["certbot", "letsencrypt", "dns", "arsys", "acme"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Plugins",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Internet :: Name Service (DNS)",
+    "Topic :: Security",
+    "Topic :: System :: Systems Administration",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "certbot>=2.0.0",
+    "acme>=2.0.0",
+    "dnspython>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0",
+    "pyyaml>=6.0",
+]
+
+[project.entry-points."certbot.plugins"]
+dns-arsys = "certbot_dns_arsys._internal.dns_arsys:Authenticator"
+
+[project.urls]
+Homepage = "https://github.com/javiervazquez/certbot-dns-arsys"
+Repository = "https://github.com/javiervazquez/certbot-dns-arsys"
+"Bug Tracker" = "https://github.com/javiervazquez/certbot-dns-arsys/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["certbot_dns_arsys*"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--tb=short"
+
+[tool.coverage.run]
+source = ["certbot_dns_arsys"]
+omit = ["tests/*"]

@@ -1,0 +1,44 @@
+name: Publish Snap
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      snap: ${{ steps.build.outputs.snap }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build snap
+        id: build
+        uses: snapcore/action-build@v1.3.0
+
+      - name: Upload snap artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: snap
+          path: ${{ steps.build.outputs.snap }}
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: snap-store
+      url: https://snapcraft.io/certbot-dns-arsys
+    steps:
+      - name: Download snap artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: snap
+
+      - name: Publish to Snap Store (stable)
+        uses: snapcore/action-publish@v1.2.0
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+        with:
+          snap: ${{ needs.build.outputs.snap }}
+          release: stable

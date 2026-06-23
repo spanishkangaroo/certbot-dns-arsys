@@ -1,0 +1,49 @@
+name: certbot-dns-arsys
+summary: Arsys DNS Authenticator plugin for Certbot
+description: |
+  Certbot DNS authenticator plugin for Arsys domains. Automates DNS-01
+  challenge validation by creating and removing _acme-challenge TXT records
+  via the Arsys Hosting SOAP API, enabling wildcard certificate issuance and
+  fully automated renewal.
+
+  Install this snap and connect it to the certbot snap to use the
+  dns-arsys authenticator from a snap-confined certbot.
+confinement: strict
+grade: stable
+base: core22
+adopt-info: certbot-dns-arsys
+
+parts:
+  certbot-dns-arsys:
+    plugin: python
+    source: .
+    override-pull: |
+      craftctl default
+      craftctl set version="$(grep -oP "(?<=^version = \")([^\"]+)" pyproject.toml)"
+    build-environment:
+      - SNAP_BUILD: "True"
+    # Build dependencies for cryptography / cffi wheels if needed.
+    build-packages:
+      - gcc
+      - git
+      - libffi-dev
+      - libssl-dev
+      - python3-dev
+
+slots:
+  # Expose the plugin's installed Python packages to the certbot snap so it
+  # can discover and load the dns-arsys authenticator.
+  certbot:
+    interface: content
+    content: certbot-1
+    read:
+      - $SNAP/lib/python3.10/site-packages
+
+plugs:
+  # Read certbot's metadata; default-provider lets this auto-connect to the
+  # installed certbot snap.
+  certbot-metadata:
+    interface: content
+    content: metadata-1
+    target: $SNAP/certbot-metadata
+    default-provider: certbot
