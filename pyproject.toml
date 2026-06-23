@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "certbot-dns-arsys"
-version = "0.1.2"
+version = "1.0.0"
 description = "Arsys DNS Authenticator plugin for Certbot"
 readme = "README.rst"
 license = { file = "LICENSE" }
